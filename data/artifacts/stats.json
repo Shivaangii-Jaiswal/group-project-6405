@@ -1,0 +1,62 @@
+{
+  "imdb": {
+    "train": {
+      "rows": 22500,
+      "positive_ratio": 0.5021333333333333,
+      "avg_length_chars": 1300.2961777777778,
+      "avg_length_words": 231.202
+    },
+    "val": {
+      "rows": 2500,
+      "positive_ratio": 0.4808,
+      "avg_length_chars": 1320.7728,
+      "avg_length_words": 234.0084
+    },
+    "test": {
+      "rows": 25000,
+      "positive_ratio": 0.5,
+      "avg_length_chars": 1271.46384,
+      "avg_length_words": 226.24924
+    }
+  },
+  "sst2": {
+    "train": {
+      "rows": 67349,
+      "positive_ratio": 0.5578256544269403,
+      "avg_length_chars": 52.5055902834489,
+      "avg_length_words": 9.409553222765
+    },
+    "val": {
+      "rows": 436,
+      "positive_ratio": 0.5068807339449541,
+      "avg_length_chars": 105.97935779816514,
+      "avg_length_words": 19.834862385321102
+    },
+    "test": {
+      "rows": 436,
+      "positive_ratio": 0.5114678899082569,
+      "avg_length_chars": 103.70412844036697,
+      "avg_length_words": 19.261467889908257
+    }
+  },
+  "emotion": {
+    "train": {
+      "rows": 16000,
+      "positive_ratio": 1.5659375,
+      "avg_length_chars": 96.8458125,
+      "avg_length_words": 19.1663125
+    },
+    "val": {
+      "rows": 2000,
+      "positive_ratio": 1.569,
+      "avg_length_chars": 95.3475,
+      "avg_length_words": 18.866
+    },
+    "test": {
+      "rows": 2000,
+      "positive_ratio": 1.532,
+      "avg_length_chars": 96.5865,
+      "avg_length_words": 19.154
+    }
+  }
+}
