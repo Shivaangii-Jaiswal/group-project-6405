@@ -1,6 +1,51 @@
 # EE6405 Sentiment Project
 
-Group project for EE6405 NLP assignment.
+Group project for EE6405 NLP assignment — a multi-model, multi-dataset study of
+English sentiment/emotion classification. Six approaches spanning classical ML,
+recurrent networks, and transformers are compared across **IMDb**, **SST-2**, and
+the **dair-ai Emotion** datasets, with a unified interactive dashboard to explore
+all results side-by-side.
+
+---
+
+## ⭐ The Dashboard Lives in `comparison_app/`
+
+**`comparison_app/` is the main deliverable of this project — it is the interactive
+Streamlit dashboard that unifies every teammate's results into one place.** All
+other folders (`src/`, `experiments/`, `gru_attention/`, `notebooks/`, `demo/`)
+produce the artifacts (metrics JSONs, training logs, figures) that the dashboard
+reads from `comparison_app/data/` and `comparison_app/assets/`.
+
+### Launching the dashboard
+
+```bash
+cd comparison_app
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The dashboard opens at **http://localhost:8501**. It is self-contained: all
+metrics and figures are pre-bundled, so **no training or GPU is required** to run
+it.
+
+### What's inside the dashboard
+
+Seven tabs — one per model family plus a cross-model overview:
+
+| Tab | Model | Owner |
+|---|---|---|
+| **Overall** | Side-by-side F1 / accuracy across every model × dataset, best-model-per-dataset breakdowns, efficiency frontier (F1 vs trainable params) | — |
+| **SVM + DistilBERT** | TF-IDF + SVM baseline and full-FT DistilBERT | Wang Yuekai |
+| **LoRA** | LoRA fine-tuning on RoBERTa-large / BERTweet / DistilBERT at rank 8 and 16 — rank comparison, per-epoch learning curves, parameter efficiency, bf16→fp16 NaN case study, per-class F1 | Shivaangii Jaiswal |
+| **BERTweet Full-FT** | Full fine-tuning of `vinai/bertweet-base` with LIME explanations | Wai Yar Aung |
+| **Bi-GRU + Attention** | From-scratch recurrent baseline with Bahdanau attention | Yu Juncheng |
+| **BiLSTM + Attention** | From-scratch BiLSTM with attention | Joanna SJ |
+| **TF-IDF + LogReg** | Classical baseline with SHAP explanations | Kevin Wong |
+
+See [`comparison_app/README.md`](comparison_app/README.md) for the full dashboard
+structure and notes on test-set sizes.
+
+---
 
 ## Project Goal
 
@@ -12,6 +57,8 @@ Build a trustworthy English sentiment classification system with:
 - Robustness checks: simple text perturbations
 - Explainability: token/word-level attribution
 - Lightweight GUI demo for visualization
+- **A unified interactive dashboard (`comparison_app/`)** combining every
+  teammate's results — classical, recurrent, and transformer — into one place.
 
 ## Suggested Directory Structure
 
@@ -20,6 +67,13 @@ ee6405-group/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+├── comparison_app/          ⭐ MAIN DASHBOARD — unified Streamlit UI
+│   ├── app.py
+│   ├── tabs/                # one module per model tab
+│   ├── data/                # pre-computed metrics (CSV / JSON)
+│   ├── assets/              # pre-computed figures per model
+│   ├── requirements.txt
+│   └── README.md
 ├── configs/
 ├── data/
 │   ├── raw/
@@ -35,13 +89,16 @@ ee6405-group/
 │   ├── visualization/
 │   └── utils/
 ├── experiments/
+├── gru_attention/           # Bi-GRU + Bahdanau attention (Yu Juncheng)
 ├── notebooks/
+│   ├── WaiYarAung/          # BERTweet full-FT training scripts
+│   └── joannasj-bilstm-attention.ipynb
 ├── results/
 │   ├── figures/
 │   ├── tables/
 │   └── logs/
 ├── checkpoints/
-├── demo/
+├── demo/                    # per-teammate standalone Streamlit demos
 ├── docs/
 ├── report/
 ├── slides/
@@ -52,13 +109,25 @@ ee6405-group/
 
 > **Prerequisites:** Python 3.10+ is required.
 
-**One-command setup** (creates venv, installs deps, runs experiments, launches demo):
+### Option A — Just run the dashboard (no training needed, recommended for reviewers)
+
+```bash
+cd comparison_app
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+### Option B — One-command full setup
+
+Creates venv, installs deps, runs experiments, launches demo:
 
 ```bash
 bash setup.sh
 ```
 
-Or follow the steps below manually:
+### Option C — Manual step-by-step
+
+Follow the steps below.
 
 ### 1) Create environment
 
@@ -116,6 +185,14 @@ Logistic Regression + SHAP
 
 ### 4) Launch GUI demo
 
+The main unified dashboard (recommended):
+
+```bash
+cd comparison_app && streamlit run app.py
+```
+
+Standalone per-teammate demos are also available:
+
 ```bash
 streamlit run demo/gui_yuekai.py
 ```
@@ -134,7 +211,7 @@ python3 -m streamlit run demo/gui_3.py
 - [ ] Reproducible code (`src/` + `experiments/`)
 - [ ] Metrics table (Accuracy / Precision / Recall / F1)
 - [ ] Core figures (distribution, confusion matrix, training curves, comparison)
-- [ ] GUI demo
+- [ ] **Unified GUI dashboard → `comparison_app/`**
 - [ ] Report PDF
 - [ ] Presentation slides
 - [ ] <=10 min video
@@ -144,9 +221,10 @@ python3 -m streamlit run demo/gui_3.py
 
 1. Run data + experiments once from scratch (new terminal session).
 2. Confirm key files exist in `results/figures` and `results/tables`.
-3. Open GUI and verify prediction/explain/robustness/benchmark tabs.
-4. Finalize report, slides, and video from templates.
-5. Push all code and docs to GitHub with a clean `git status`.
+3. Open the unified dashboard (`comparison_app/app.py`) and verify every tab loads.
+4. Open standalone GUIs and verify prediction/explain/robustness/benchmark tabs.
+5. Finalize report, slides, and video from templates.
+6. Push all code and docs to GitHub with a clean `git status`.
 
 ---
 
@@ -306,3 +384,49 @@ Each model includes LIME (Local Interpretable Model-agnostic Explanations):
 - **Green bars** — words that support the predicted class
 - **Red bars** — words that oppose it
 - Pre-computed explanations saved in `results/tables/WaiYarAung_*_lime_explanations.json`
+
+---
+
+# Shivaangii Jaiswal — LoRA Fine-Tuning Study
+
+Parameter-efficient fine-tuning with **LoRA adapters** on three backbone models
+(**RoBERTa-large**, **BERTweet**, **DistilBERT**) at ranks **r=8** and **r=16**,
+across all three datasets. Results — including rank comparison, per-epoch
+learning curves, parameter efficiency analysis, a bf16→fp16 NaN case study, and
+per-class F1 / precision / recall — are rendered inside the **LoRA** tab of the
+unified `comparison_app/` dashboard.
+
+**Artifacts:**
+- Per-run bundles + train logs → `results/tables/lora/` (mirrored into
+  `comparison_app/data/lora_*`)
+- Efficiency frontier CSV → `comparison_app/data/lora_efficiency_frontier.csv`
+
+**Run LoRA experiments:**
+```bash
+python3 -m experiments.run_lora --model roberta-large --rank 8  --dataset imdb
+# Full matrix lives in experiments/run_efficiency_sweep.sh
+bash experiments/run_efficiency_sweep.sh
+```
+
+---
+
+# joannasj — BiLSTM + Attention
+
+From-scratch BiLSTM with attention, implemented in
+`notebooks/joannasj-bilstm-attention.ipynb`. Classification reports are
+transcribed into `comparison_app/data/bilstm_classification_reports.json` and
+rendered in the **BiLSTM** tab of the dashboard.
+
+---
+
+# Kevin Wong — TF-IDF + Logistic Regression + SHAP
+
+Classical baseline with SHAP-based global and local explanations. See
+`experiments/run_Logistic_Regression.py` above for training, and run the
+standalone demo with:
+
+```bash
+streamlit run demo/gui_3.py
+```
+
+Metrics feed into the **TF-IDF + LogReg** tab of the dashboard.
